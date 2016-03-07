@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="example.makatz.gpstracking1.SignUpActivity">
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/sign_up_email"
+        android:textColor="@color/btn_text"
+        android:layout_marginTop="50dp"
+        android:hint="@string/sign_up_email_hint" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/sign_up_password"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/btn_text"
+        android:hint="@string/sign_up_password_hint"
+        android:layout_below="@+id/sign_up_email" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/sign_up_password_retype"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/btn_text"
+        android:hint="@string/sign_up_password_retype_hint"
+        android:layout_below="@+id/sign_up_password" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_up_button_label"
+        android:id="@+id/sign_up_btn"
+        android:layout_marginTop="50dp"
+        android:textColor="@color/btn_text"
+        android:background="@drawable/btn_selector"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>

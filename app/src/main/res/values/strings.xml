@@ -1,3 +1,33 @@
 <resources>
-    <string name="app_name">GPSTracking</string>
+    <!-- General -->
+    <string name="app_name">GPS Tracking</string>
+    <string name="err_email_missing">Please enter your email!</string>
+    <string name="err_email_invalid">Email is invalid!</string>
+
+
+    <!-- Sign up activity -->
+    <string name="activity_sign_up_title">Sign Up</string>
+    <string name="sign_up_password_hint">Password</string>
+    <string name="sign_up_password_retype_hint">Retype password</string>
+    <string name="sign_up_email_hint">Your email</string>
+    <string name="sign_up_button_label">Sign Up</string>
+    <string name="sign_up_err_pass_invalid">Password must have at least 6 characters!</string>
+    <string name="sign_up_err_pass_not_match">Password not match!</string>
+    <string name="sign_up_err_dialog_title">Sign Up Error!</string>
+
+    <!-- Login activity -->
+    <string name="activity_login_title">Login</string>
+    <string name="login_email_hint">Your email</string>
+    <string name="login_password_hint">Password</string>
+    <string name="login_button_label">Login</string>
+    <string name="login_txt_signup">Don\'t have account? Sign up now!</string>
+    <string name="login_err_dialog_title">Login Error!</string>
+    <string name="login_err_password_missing">Please enter your password!</string>
+
+
+
+    <!-- Main activity -->
+    <string name="main_txt_active_user">User: %1$s</string>
+    <string name="main_menu_logout">Log out</string>
+    <string name="main_menu_exit">Exit</string>
 </resources>
