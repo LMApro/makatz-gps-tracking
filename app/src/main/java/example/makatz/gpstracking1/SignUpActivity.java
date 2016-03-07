@@ -80,7 +80,7 @@ public class SignUpActivity extends ActionBarActivity implements View.OnClickLis
             public void onSuccess(Map<String, Object> result) {
                 Log.d(TAG, "Successfully created user account with uid: " + result.toString());
                 Toast.makeText(SignUpActivity.this, "Account created!", Toast.LENGTH_SHORT).show();
-
+                btnSignUp.setText(getString(R.string.sign_up_status_logging_in));
                 logInAfterSignUp(email, password);
             }
             @Override
