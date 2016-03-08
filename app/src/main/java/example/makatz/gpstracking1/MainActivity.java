@@ -53,9 +53,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void setUp() {
         txtUser = (TextView) findViewById(R.id.main_txt_active_user);
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setIcon(R.mipmap.ic_my_location_white);
-        actionBar.setDisplayUseLogoEnabled(true);
-        actionBar.setDisplayShowHomeEnabled(true);
+        if (actionBar != null) {
+            actionBar.setLogo(R.mipmap.ic_my_location_white);
+            actionBar.setDisplayUseLogoEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+        }
+
     }
 
     private void goToLogin() {
