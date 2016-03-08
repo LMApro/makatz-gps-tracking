@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
@@ -18,7 +19,7 @@ import com.firebase.client.FirebaseError;
 
 import java.util.Map;
 
-public class SignUpActivity extends ActionBarActivity implements View.OnClickListener {
+public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = SignUpActivity.class.getSimpleName();
     private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);

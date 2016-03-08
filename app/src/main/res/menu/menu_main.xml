@@ -9,6 +9,12 @@
         android:title="@string/main_menu_logout"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/main_menu_open_map"
+        android:title="@string/main_menu_open_map"
+        android:icon="@mipmap/ic_map_white"
+        app:showAsAction="ifRoom" />
+
 
 
 </menu>

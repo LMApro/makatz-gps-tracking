@@ -2,8 +2,10 @@ package example.makatz.gpstracking1;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -16,7 +18,7 @@ import com.firebase.client.Firebase;
 
 import org.w3c.dom.Text;
 
-public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
@@ -38,12 +40,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         ref.addAuthStateListener(new Firebase.AuthStateListener() {
             @Override
             public void onAuthStateChanged(AuthData authData) {
-                if (authData != null) {
-                    // user is logged in
-                } else {
+                if (authData == null) {
+                    // user is not logged in
                     goToLogin();
                     txtUser.setText("");
-
                 }
             }
         });
@@ -52,6 +52,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
 
     protected void setUp() {
         txtUser = (TextView) findViewById(R.id.main_txt_active_user);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setIcon(R.mipmap.ic_my_location_white);
+        actionBar.setDisplayUseLogoEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
     }
 
     private void goToLogin() {
@@ -83,11 +87,17 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
             case R.id.main_menu_logout:
                 ref.unauth();
                 break;
-
-
+            case R.id.main_menu_open_map:
+                openMap();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    private void openMap() {
+        Intent openMap = new Intent(MainActivity.this, MapsActivity.class);
+        startActivity(openMap);
     }
 }
