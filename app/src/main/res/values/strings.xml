@@ -31,4 +31,7 @@
     <string name="main_menu_logout">Log out</string>
     <string name="main_menu_open_map">Open Map</string>
     <string name="title_activity_maps">Map</string>
+    <string name="main_err_dialog_title">Error!</string>
+    <string name="main_err_play_service">Google Play Service is not available!</string>
+    <string name="main_btn_toggle_tracking">Start tracking</string>
 </resources>

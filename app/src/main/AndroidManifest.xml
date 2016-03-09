@@ -26,12 +26,14 @@
         </activity>
         <activity
             android:name=".LoginActivity"
+            android:screenOrientation="portrait"
             android:icon="@mipmap/ic_lock_open_white"
             android:label="@string/activity_login_title">
 
         </activity>
         <activity
             android:name=".SignUpActivity"
+            android:screenOrientation="portrait"
             android:icon="@mipmap/ic_assignment_ind_white"
             android:label="@string/activity_sign_up_title"
             android:parentActivityName=".LoginActivity">
