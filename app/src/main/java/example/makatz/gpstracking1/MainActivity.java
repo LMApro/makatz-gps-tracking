@@ -191,26 +191,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onConnected(Bundle bundle) {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(17); // Update location every 17 ms (60fps)
-
-
-//        if (lastLocation != null) {
-//            String latitude = String.valueOf(lastLocation.getLatitude());
-//            String longitude = String.valueOf(lastLocation.getLongitude());
-//            String speed = String.valueOf(lastLocation.getSpeed());
-//            String timestamp = String.valueOf(lastLocation.getTime());
-//
-//            txtLocation.setText(latitude + ", " + longitude + ", " + speed + ", " + timestamp);
-//        } else {
-//
-//            Toast.makeText(this, "Can not get location,Make sure location is enabled on the device", Toast.LENGTH_SHORT).show();
-//        }
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(17);
 
         if (bundle != null) {
             Log.d(TAG, "On connected: " + bundle.toString());
         }
-
-
     }
 
     @Override
@@ -226,6 +212,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onLocationChanged(Location location) {
-        txtLocation.setText(location.toString());
+        if (location != null) {
+            TrackingData data = new TrackingData(location.getLatitude(), location.getLongitude(), location.getSpeed(), String.valueOf(location.getTime()), ref.getAuth().getProviderData().get("email").toString());
+            Log.d(TAG, data.toString());
+            txtLocation.setText(data.toString());
+        }
     }
 }
