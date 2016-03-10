@@ -20,6 +20,7 @@ import com.firebase.client.FirebaseError;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
+    private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
     private Button btnLogin;
     private EditText edtEmail;
     private EditText edtPassword;
@@ -71,14 +72,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void logIn(String email, String password) {
-        Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
+
         btnLogin.setText(R.string.login_button_label_pending);
         Firebase.AuthResultHandler authResultHandler = new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
                 // Authenticated successfully with payload authData
-                Log.d(TAG, authData.getUid());
-                Log.d(TAG, authData.getToken());
+//                Log.d(TAG, authData.getUid());
+//                Log.d(TAG, authData.getToken());
                 Intent returnToMain = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(returnToMain);
                 finish();
