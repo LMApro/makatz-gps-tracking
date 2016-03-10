@@ -110,13 +110,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
         if (!checkPlayServicesAvailability(this)) {
-            showPlayServiceError();
+            showError(getString(R.string.main_err_play_service));
         }
     }
 
-    private void showPlayServiceError() {
+    private void showError(String errorMessage) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage(R.string.main_err_play_service)
+        builder.setMessage(errorMessage)
                 .setTitle(R.string.main_err_dialog_title)
                 .setPositiveButton(android.R.string.ok, null);
         AlertDialog dialog = builder.create();
@@ -233,7 +233,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             txtLocation.setText(data.toString());
             if (!oldAddress.equals(getAddress(location))) {
                 Log.d(TAG, getAddress(location));
-
                 txtAddress.setText(getAddress(location));
                 oldAddress = getAddress(location);
             }
@@ -261,11 +260,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.e(TAG, illegalArgumentException.getMessage());
         }
 
-
         // Handle case where no address was found.
         if (addresses == null || addresses.size() == 0) {
             Log.e(TAG, "No address found");
-            return null;
+            return "Unknown address";
         } else {
             Address address = addresses.get(0);
             ArrayList<String> addressFragments = new ArrayList<>();
@@ -273,17 +271,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 addressFragments.add(address.getAddressLine(i));
             }
             return TextUtils.join(", ", addressFragments);
-
-            // Fetch the address lines using {@code getAddressLine},
-            // join them, and send them to the thread. The {@link android.location.address}
-            // class provides other options for fetching address details that you may prefer
-            // to use. Here are some examples:
-            // getLocality() ("Mountain View", for example)
-            // getAdminArea() ("CA", for example)
-            // getPostalCode() ("94043", for example)
-            // getCountryCode() ("US", for example)
-            // getCountryName() ("United States", for example)
-
         }
 
     }

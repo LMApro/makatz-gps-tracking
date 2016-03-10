@@ -14,6 +14,7 @@
     <string name="sign_up_err_pass_invalid">Password must have at least 6 characters!</string>
     <string name="sign_up_err_pass_not_match">Password not match!</string>
     <string name="sign_up_err_dialog_title">Sign Up Error!</string>
+    <string name="sign_up_status_creating_user">Creating user &#8230;</string>
     <string name="sign_up_status_logging_in">Logging in &#8230;</string>
 
     <!-- Login activity -->

@@ -86,6 +86,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 // Authenticated failed with error firebaseError
+                btnLogin.setText(R.string.login_button_label);
                 AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
                 builder.setMessage(firebaseError.getMessage())
                         .setTitle(R.string.login_err_dialog_title)

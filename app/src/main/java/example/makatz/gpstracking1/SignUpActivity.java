@@ -76,36 +76,47 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     private void createUser() {
         final String email = edtEmail.getText().toString();
         final String password = edtPassword.getText().toString();
+        btnSignUp.setText(getString(R.string.sign_up_status_creating_user));
         ref.createUser(email, password, new Firebase.ValueResultHandler<Map<String, Object>>() {
             @Override
             public void onSuccess(Map<String, Object> result) {
                 Log.d(TAG, "Successfully created user account with uid: " + result.toString());
                 Toast.makeText(SignUpActivity.this, "Account created!", Toast.LENGTH_SHORT).show();
-                btnSignUp.setText(getString(R.string.sign_up_status_logging_in));
                 logInAfterSignUp(email, password);
             }
             @Override
             public void onError(FirebaseError firebaseError) {
                 Log.d(TAG, "Error occured: " + firebaseError.getMessage());
-                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
-                builder.setMessage(firebaseError.getMessage())
-                        .setTitle(R.string.sign_up_err_dialog_title)
-                        .setPositiveButton(android.R.string.ok, null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+//                builder.setMessage(firebaseError.getMessage())
+//                        .setTitle(R.string.sign_up_err_dialog_title)
+//                        .setPositiveButton(android.R.string.ok, null);
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+                btnSignUp.setText(R.string.sign_up_button_label);
+                showError(firebaseError.getMessage());
             }
         });
 
     }
 
-    private void logInAfterSignUp(String email, String password) {
+    private void showError(String errorMessage) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+        builder.setMessage(errorMessage)
+                .setTitle(R.string.sign_up_err_dialog_title)
+                .setPositiveButton(android.R.string.ok, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
+    private void logInAfterSignUp(String email, String password) {
+        btnSignUp.setText(getString(R.string.sign_up_status_logging_in));
         Firebase.AuthResultHandler authResultHandler = new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {
                 // Authenticated successfully with payload authData
-                Log.d(TAG, authData.getUid());
-                Log.d(TAG, authData.getToken());
+//                Log.d(TAG, authData.getUid());
+//                Log.d(TAG, authData.getToken());
                 Intent returnToMain = new Intent(SignUpActivity.this, MainActivity.class);
                 returnToMain.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 returnToMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -115,10 +126,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onAuthenticationError(FirebaseError firebaseError) {
                 // Authenticated failed with error firebaseError
-
+                showError(firebaseError.getMessage());
             }
         };
-
         ref.authWithPassword(email, password, authResultHandler);
     }
 }
