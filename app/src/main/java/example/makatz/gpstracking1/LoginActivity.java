@@ -72,6 +72,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void logIn(String email, String password) {
         Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
+        btnLogin.setText(R.string.login_button_label_pending);
         Firebase.AuthResultHandler authResultHandler = new Firebase.AuthResultHandler() {
             @Override
             public void onAuthenticated(AuthData authData) {

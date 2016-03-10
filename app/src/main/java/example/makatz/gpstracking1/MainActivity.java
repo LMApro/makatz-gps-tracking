@@ -3,10 +3,13 @@ package example.makatz.gpstracking1;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +27,11 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -32,11 +40,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
     private TextView txtUser;
     private TextView txtLocation;
+    private TextView txtAddress;
     private boolean isTrackingLocation;
     private Button btnToggleTracking;
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+
+    private Address currentAddress;
 
 
     @Override
@@ -50,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // binding views and set up properties
         txtUser = (TextView) findViewById(R.id.main_txt_active_user);
         txtLocation = (TextView) findViewById(R.id.main_location);
+        txtAddress = (TextView) findViewById(R.id.main_txt_address);
         btnToggleTracking = (Button) findViewById(R.id.main_btn_toggle_tracking);
         btnToggleTracking.setOnClickListener(this);
         isTrackingLocation = false;
@@ -114,8 +126,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onStop() {
-        mGoogleApiClient.disconnect();
         super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
 
@@ -186,7 +200,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-
     @Override
     public void onConnected(Bundle bundle) {
         mLocationRequest = LocationRequest.create();
@@ -210,12 +223,68 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Log.d(TAG, "GoogleApiClient connection has failed");
     }
 
+    String oldAddress = "";
     @Override
     public void onLocationChanged(Location location) {
+
         if (location != null) {
             TrackingData data = new TrackingData(location.getLatitude(), location.getLongitude(), location.getSpeed(), String.valueOf(location.getTime()), ref.getAuth().getProviderData().get("email").toString());
             Log.d(TAG, data.toString());
             txtLocation.setText(data.toString());
+            if (!oldAddress.equals(getAddress(location))) {
+                Log.d(TAG, getAddress(location));
+
+                txtAddress.setText(getAddress(location));
+                oldAddress = getAddress(location);
+            }
+
         }
+    }
+
+    private String getAddress(Location location) {
+        List<Address> addresses = null;
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            // Using getFromLocation() returns an array of Addresses for the area immediately
+            // surrounding the given latitude and longitude. The results are a best guess and are
+            // not guaranteed to be accurate.
+            addresses = geocoder.getFromLocation(
+                    location.getLatitude(),
+                    location.getLongitude(),
+                    // In this sample, we get just a single address.
+                    1);
+        } catch (IOException ioException) {
+            // Catch network or other I/O problems.
+            Log.e(TAG, ioException.getMessage());
+        } catch (IllegalArgumentException illegalArgumentException) {
+            // Catch invalid latitude or longitude values.
+            Log.e(TAG, illegalArgumentException.getMessage());
+        }
+
+
+        // Handle case where no address was found.
+        if (addresses == null || addresses.size() == 0) {
+            Log.e(TAG, "No address found");
+            return null;
+        } else {
+            Address address = addresses.get(0);
+            ArrayList<String> addressFragments = new ArrayList<>();
+            for(int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+                addressFragments.add(address.getAddressLine(i));
+            }
+            return TextUtils.join(", ", addressFragments);
+
+            // Fetch the address lines using {@code getAddressLine},
+            // join them, and send them to the thread. The {@link android.location.address}
+            // class provides other options for fetching address details that you may prefer
+            // to use. Here are some examples:
+            // getLocality() ("Mountain View", for example)
+            // getAdminArea() ("CA", for example)
+            // getPostalCode() ("94043", for example)
+            // getCountryCode() ("US", for example)
+            // getCountryName() ("United States", for example)
+
+        }
+
     }
 }

@@ -36,5 +36,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="69dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/main_txt_address"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/main_location"
+        android:layout_marginTop="20dp"/>
+
 
 </RelativeLayout>
