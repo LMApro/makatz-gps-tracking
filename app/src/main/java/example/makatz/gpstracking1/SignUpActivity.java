@@ -87,6 +87,12 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             @Override
             public void onError(FirebaseError firebaseError) {
                 Log.d(TAG, "Error occured: " + firebaseError.getMessage());
+//                AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
+//                builder.setMessage(firebaseError.getMessage())
+//                        .setTitle(R.string.sign_up_err_dialog_title)
+//                        .setPositiveButton(android.R.string.ok, null);
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
                 btnSignUp.setText(R.string.sign_up_button_label);
                 showError(firebaseError.getMessage());
             }

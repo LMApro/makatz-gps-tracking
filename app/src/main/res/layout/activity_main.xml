@@ -19,30 +19,18 @@
         android:id="@+id/main_txt_active_user"
         />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:id="@+id/main_location"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
-
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:background="@drawable/btn_start_tracking"
         android:text="@string/main_btn_toggle_tracking"
         android:id="@+id/main_btn_toggle_tracking"
-        android:layout_above="@+id/main_location"
+        android:textColor="@color/btn_text"
+        android:textSize="18sp"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
         android:layout_marginBottom="69dp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/main_txt_address"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/main_location"
-        android:layout_marginTop="20dp"/>
 
 
 </RelativeLayout>
