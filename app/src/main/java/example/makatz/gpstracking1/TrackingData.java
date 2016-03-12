@@ -1,8 +1,10 @@
 package example.makatz.gpstracking1;
 
-import android.app.Activity;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 
 /**
@@ -19,19 +21,24 @@ public class TrackingData implements Serializable {
     private String userEmail;
 
 
-    public TrackingData(double latitude, double longitude, String address, float speed, String timestamp, String userEmail) {
+    public TrackingData(double latitude, double longitude, String address, float speed, long timestamp, String userEmail) {
         this.latitude = latitude;
         this.longitude = longitude;
         this.speed = speed * 3.6f; // convert m/s to km/h
-        this.timestamp = timestamp;
+        this.timestamp = formatTime(timestamp);
         this.userEmail = userEmail;
         this.address = address;
     }
 
-    public TrackingData(String address, float speed, String timestamp) {
+    public TrackingData(String address, float speed, long timestamp) {
         this.address = address;
         this.speed = speed * 3.6f;
-        this.timestamp = timestamp;
+        this.timestamp = formatTime(timestamp);
+    }
+
+    public static String formatTime(long timestamp) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
+        return formatter.format(timestamp);
     }
 
     public String getAddress() {
@@ -57,7 +64,6 @@ public class TrackingData implements Serializable {
                 + String.valueOf(speed) + "|"
                 + timestamp);
         return result;
-
     }
 
 

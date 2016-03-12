@@ -102,7 +102,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(Bundle bundle) {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1000);
+        mLocationRequest.setInterval(2000);
         mLocationRequest.setFastestInterval(17);
         startTrackingLocation();
     }
@@ -114,35 +114,47 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     String oldAddress = "";
+    double oldLatitude = 0.0;
+    double oldLongitude = 0.0;
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-            String currentAddress = getAddress(location.getLatitude(), location.getLongitude());
-            // data send to OM2M server
-            TrackingData dataToOM2M = new TrackingData(
-                    location.getLatitude(),
-                    location.getLongitude(),
-                    currentAddress,
-                    location.getSpeed(),
-                    String.valueOf(location.getTime()),
-                    ref.getAuth().getProviderData().get("email").toString()
-            );
 
-            // data send to Firebase
-            TrackingData dataToFirebase = new TrackingData(
-                    currentAddress,
-                    location.getSpeed(),
-                    String.valueOf(location.getTime())
-            );
+            double currentLatitude = location.getLatitude();
+            double currentLongitude = location.getLongitude();
+            String currentAddress = getAddress(currentLatitude, currentLongitude);
 
-            // move camera to current location
-            goToMyLocation(location.getLatitude(), location.getLongitude());
+            // SEND DATA WHENEVER COORDINATES CHANGED
+            if ((oldLatitude != currentLatitude || oldLongitude != currentLongitude) && !oldAddress.equals(currentAddress)) {
+                // data send to OM2M server
+                TrackingData dataToOM2M = new TrackingData(
+                        currentLatitude,
+                        currentLongitude,
+                        currentAddress,
+                        location.getSpeed(),
+                        location.getTime(),
+                        ref.getAuth().getProviderData().get("email").toString()
+                );
 
-            sendDataToOM2M(dataToOM2M);
-            sendDataToFirebase(dataToFirebase);
+                // data send to Firebase
+                TrackingData dataToFirebase = new TrackingData(
+                        currentAddress,
+                        location.getSpeed(),
+                        location.getTime()
+                );
+
+                sendDataToOM2M(dataToOM2M);
+                sendDataToFirebase(dataToFirebase);
+
+                // move camera to current location
+                goToMyLocation(currentLatitude, currentLongitude, location.getBearing());
+
+                oldLatitude = currentLatitude;
+                oldLongitude = currentLongitude;
+            }
+
 
             // show Toast whenever current address changed
-
             if (!oldAddress.equals(currentAddress)) {
                 Log.d(TAG, currentAddress);
                 Toast.makeText(MapsActivity.this, currentAddress, Toast.LENGTH_SHORT).show();
@@ -151,11 +163,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    private void goToMyLocation(double latitude, double longitude) {
+    private void goToMyLocation(double latitude, double longitude, float bearing) {
         changeCamera(CameraUpdateFactory.newCameraPosition(
                 new CameraPosition.Builder().target(new LatLng(latitude, longitude))
                         .zoom(18)
-                        .bearing(0)
+                        .bearing(bearing)
                         .tilt(25)
                         .build()
         ));
