@@ -101,7 +101,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(Bundle bundle) {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(1000);
+        mLocationRequest.setInterval(5000);
         mLocationRequest.setFastestInterval(17);
         startTrackingLocation();
     }
@@ -113,28 +113,49 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     String oldAddress = "";
+    double oldLatitude = 0.0;
+    double oldLongitude = 0.0;
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-            TrackingData data = new TrackingData(location.getLatitude(), location.getLongitude(), location.getSpeed(), String.valueOf(location.getTime()), ref.getAuth().getProviderData().get("email").toString());
-            goToMyLocation(location.getLatitude(), location.getLongitude());
-            sendDataToOM2M(data);
+            double currentLatitude = location.getLatitude();
+            double currentLongitude = location.getLongitude();
+            String currentAddress = getAddress(currentLatitude, currentLongitude);
 
-            // show Toast whenever current address changed
-            String currentAddress = getAddress(location);
             if (!oldAddress.equals(currentAddress)) {
-                Log.d(TAG, currentAddress);
                 Toast.makeText(MapsActivity.this, currentAddress, Toast.LENGTH_SHORT).show();
                 oldAddress = currentAddress;
+
+                // SEND DATA WHENEVER COORDINATES CHANGED
+                if (oldLatitude != currentLatitude || oldLongitude != currentLongitude) {
+                    // data send to OM2M server
+                    TrackingData dataToOM2M = new TrackingData(
+                            currentLatitude,
+                            currentLongitude,
+                            currentAddress,
+                            location.getSpeed(),
+                            location.getTime(),
+                            ref.getAuth().getProviderData().get("email").toString()
+                    );
+
+                    sendDataToOM2M(dataToOM2M);
+
+                    // move camera to current location
+                    goToMyLocation(currentLatitude, currentLongitude, location.getBearing());
+
+                    oldLatitude = currentLatitude;
+                    oldLongitude = currentLongitude;
+                }
+
             }
         }
     }
 
-    private void goToMyLocation(double latitude, double longitude) {
+    private void goToMyLocation(double latitude, double longitude, float bearing) {
         changeCamera(CameraUpdateFactory.newCameraPosition(
                 new CameraPosition.Builder().target(new LatLng(latitude, longitude))
                         .zoom(18)
-                        .bearing(0)
+                        .bearing(bearing)
                         .tilt(25)
                         .build()
         ));
@@ -161,7 +182,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
-    private String getAddress(Location location) {
+    private String getAddress(double latitude, double longitude) {
         List<Address> addresses = null;
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
@@ -169,8 +190,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             // surrounding the given latitude and longitude. The results are a best guess and are
             // not guaranteed to be accurate.
             addresses = geocoder.getFromLocation(
-                    location.getLatitude(),
-                    location.getLongitude(),
+                    latitude,
+                    longitude,
                     // In this sample, we get just a single address.
                     1);
         } catch (IOException ioException) {
