@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
@@ -37,8 +38,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
 
     private GoogleMap mMap;
-    private boolean isTrackingLocation;
-    private boolean isMapOnly;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
@@ -56,9 +55,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void setUp() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            isTrackingLocation = extras.getBoolean(GPSTracking.TRACKING); //true
-            isMapOnly = extras.getBoolean(GPSTracking.MAP_ONLY);
-//            Log.d(TAG, String.valueOf(isTrackingLocation));
+            boolean isTrackingLocation = extras.getBoolean(GPSTracking.TRACKING); //true
+            boolean isMapOnly = extras.getBoolean(GPSTracking.MAP_ONLY);
         }
 
     }
@@ -77,15 +75,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -96,7 +86,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnConnectionFailedListener(this)
                 .build();
         mGoogleApiClient.connect();
-
     }
 
 
@@ -130,8 +119,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             TrackingData data = new TrackingData(location.getLatitude(), location.getLongitude(), location.getSpeed(), String.valueOf(location.getTime()), ref.getAuth().getProviderData().get("email").toString());
             goToMyLocation(location.getLatitude(), location.getLongitude());
             sendDataToOM2M(data);
-        }
 
+            // show Toast whenever current address changed
+            String currentAddress = getAddress(location);
+            if (!oldAddress.equals(currentAddress)) {
+                Log.d(TAG, currentAddress);
+                Toast.makeText(MapsActivity.this, currentAddress, Toast.LENGTH_SHORT).show();
+                oldAddress = currentAddress;
+            }
+        }
     }
 
     private void goToMyLocation(double latitude, double longitude) {

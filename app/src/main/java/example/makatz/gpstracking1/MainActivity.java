@@ -2,21 +2,19 @@ package example.makatz.gpstracking1;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
+import android.os.Build;
+import android.provider.Settings;
 import android.support.v7.app.ActionBar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
@@ -24,13 +22,6 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationServices;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements
@@ -87,19 +78,32 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
-
-        // create new instance of GoogleApiClient
-//        mGoogleApiClient = new GoogleApiClient.Builder(this)
-//                .addApi(LocationServices.API)
-//                .addConnectionCallbacks(this)
-//                .addOnConnectionFailedListener(this)
-//                .build();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-//        mGoogleApiClient.connect();
+        if (!checkLocationAvailability(this)) {
+            showDialogCheckLocation();
+        }
+    }
+
+    private void showDialogCheckLocation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(getString(R.string.err_location_service_not_enabled))
+                .setTitle(R.string.main_err_dialog_title)
+                .setPositiveButton(R.string.go_to_location_settings, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                    }
+                })
+                .setNegativeButton(R.string.quit_app, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        finish();
+                    }
+                });
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @Override
@@ -123,15 +127,32 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStop() {
         super.onStop();
-//        if (mGoogleApiClient.isConnected()) {
-//            mGoogleApiClient.disconnect();
-//        }
     }
 
 
     public boolean checkPlayServicesAvailability(Context context) {
         int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
         return (resultCode == ConnectionResult.SUCCESS);
+    }
+
+    public boolean checkLocationAvailability(Context context) {
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        } else {
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
+        }
     }
 
 
@@ -143,12 +164,15 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.main_btn_toggle_tracking) {
-            Intent goToMap = new Intent(MainActivity.this, MapsActivity.class);
-            goToMap.putExtra(GPSTracking.TRACKING, true);
-            startActivity(goToMap);
+            if (checkLocationAvailability(this)) {
+                Intent goToMap = new Intent(MainActivity.this, MapsActivity.class);
+                goToMap.putExtra(GPSTracking.TRACKING, true);
+                startActivity(goToMap);
+            } else {
+                showDialogCheckLocation();
+            }
         }
     }
-
 
     @Override
     protected void onDestroy() {
@@ -183,47 +207,5 @@ public class MainActivity extends AppCompatActivity implements
         openMapOnly.putExtra(GPSTracking.MAP_ONLY, true);
         startActivity(openMapOnly);
     }
-
-
-//    @Override
-//    public void onConnected(Bundle bundle) {
-//        mLocationRequest = LocationRequest.create();
-//        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//        mLocationRequest.setInterval(1000);
-//        mLocationRequest.setFastestInterval(17);
-//
-//        if (bundle != null) {
-//            Log.d(TAG, "On connected: " + bundle.toString());
-//        }
-//    }
-//
-//    @Override
-//    public void onConnectionSuspended(int i) {
-//        Log.d(TAG, "GoogleApiClient connection has been suspend");
-//        mGoogleApiClient.connect();
-//    }
-//
-//    @Override
-//    public void onConnectionFailed(ConnectionResult connectionResult) {
-//        Log.d(TAG, "GoogleApiClient connection has failed");
-//    }
-
-//    String oldAddress = "";
-//    @Override
-//    public void onLocationChanged(Location location) {
-//
-//        if (location != null) {
-//            TrackingData data = new TrackingData(location.getLatitude(), location.getLongitude(), location.getSpeed(), String.valueOf(location.getTime()), ref.getAuth().getProviderData().get("email").toString());
-//            Log.d(TAG, data.toString());
-//            txtLocation.setText(data.toString());
-//            if (!oldAddress.equals(getAddress(location))) {
-//                Log.d(TAG, getAddress(location));
-//                txtAddress.setText(getAddress(location));
-//                oldAddress = getAddress(location);
-//            }
-//
-//        }
-//    }
-
 
 }
