@@ -34,6 +34,7 @@
     <string name="main_txt_active_user">User: %1$s</string>
     <string name="main_menu_logout">Log out</string>
     <string name="main_menu_open_map">Open Map</string>
+    <string name="main_menu_about">About</string>
     <string name="main_menu_change_password">Change password</string>
     <string name="main_err_dialog_title">Error!</string>
     <string name="main_err_play_service">Google Play Service is not available!</string>
@@ -53,5 +54,14 @@
     <string name="change_pw_err_missing_old_password">Please enter your old password!</string>
     <string name="change_pw_err_missing_new_password">Please enter your new password!</string>
     <string name="change_pw_err_new_password_mismatch">New passwords not match!</string>
+
+    <!-- Info Activity -->
+    <string name="activity_info_title">About</string>
+    <string name="info_image">GPS Tracking Image</string>
+    <string name="info_txt_app_name">GPS Tracking 0.1.0</string>
+    <string name="info_author_name">Copyright 2016 - %1$s</string>
+    <string name="info_author_email">Email: %1$s</string>
+    <string name="info_author_phone">Phone number: %1$s</string>
+    <string name="info_app_description">Ứng dụng giám sát hành trình theo thời gian thực sử dụng Firebase, Google Location và Google Maps.</string>
 
 </resources>

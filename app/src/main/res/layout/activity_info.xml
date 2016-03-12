@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="example.makatz.gpstracking1.InfoActivity" >
+
+    <ImageView
+        android:layout_width="160dp"
+        android:layout_height="160dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:contentDescription="@string/info_image"
+        android:src="@drawable/gps_tracking"
+        android:id="@+id/info_image"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="22sp"
+        android:textColor="@color/btn_text"
+        android:id="@+id/info_app_name"
+        android:text="@string/info_txt_app_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/info_image"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/info_app_description"
+        android:gravity="center"
+        android:text="@string/info_app_description"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/info_app_name"
+        android:layout_marginTop="10dp"
+        android:textSize="16sp"
+        android:textColor="@color/btn_text" />
+
+    <TextView
+        android:id="@+id/info_author_name"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/info_app_description"
+        android:text="@string/info_author_name"
+        android:textSize="16sp"
+        android:textColor="@color/btn_text"
+        android:layout_marginTop="60dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/info_author_email"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/info_author_name"
+        android:text="@string/info_author_email"
+        android:textSize="16sp"
+        android:textColor="@color/btn_text"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/info_author_phone"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/info_author_email"
+        android:text="@string/info_author_phone"
+        android:textSize="16sp"
+        android:textColor="@color/btn_text"
+        android:layout_marginTop="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+
+
+</RelativeLayout>

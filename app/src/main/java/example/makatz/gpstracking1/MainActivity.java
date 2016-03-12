@@ -185,8 +185,8 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.main_menu_logout:
                 ref.unauth();
                 break;
-            case R.id.main_menu_open_map:
-                openMapOnly();
+            case R.id.main_menu_about:
+                goToAbout();
                 break;
             case R.id.main_menu_change_password:
                 goToChangePassword();
@@ -202,10 +202,9 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(goToChangePassword);
     }
 
-    private void openMapOnly() {
-        Intent openMapOnly = new Intent(MainActivity.this, MapsActivity.class);
-        openMapOnly.putExtra(GPSTracking.MAP_ONLY, true);
-        startActivity(openMapOnly);
+    private void goToAbout() {
+        Intent goToAbout = new Intent(MainActivity.this, InfoActivity.class);
+        startActivity(goToAbout);
     }
 
 }

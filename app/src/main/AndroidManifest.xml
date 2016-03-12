@@ -42,7 +42,13 @@
             android:screenOrientation="portrait"
             android:label="@string/activity_change_password_title"
             android:parentActivityName=".MainActivity">
+        </activity>
 
+        <activity
+            android:name=".InfoActivity"
+            android:screenOrientation="portrait"
+            android:label="@string/activity_info_title"
+            android:parentActivityName=".MainActivity">
         </activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
