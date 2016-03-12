@@ -18,26 +18,18 @@ import android.widget.TextView;
 
 import com.firebase.client.AuthData;
 import com.firebase.client.Firebase;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
 
 
 public class MainActivity extends AppCompatActivity implements
-        View.OnClickListener
-//        GoogleApiClient.ConnectionCallbacks,
-//        GoogleApiClient.OnConnectionFailedListener,
-//        LocationListener
-{
+        View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
     private TextView txtUser;
-    private Button btnToggleTracking;
-
-    private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
+    private Button btnStartTracking;
 
 
     @Override
@@ -50,8 +42,8 @@ public class MainActivity extends AppCompatActivity implements
     private void setUp() {
         // binding views and set up properties
         txtUser = (TextView) findViewById(R.id.main_txt_active_user);
-        btnToggleTracking = (Button) findViewById(R.id.main_btn_toggle_tracking);
-        btnToggleTracking.setOnClickListener(this);
+        btnStartTracking = (Button) findViewById(R.id.main_btn_toggle_tracking);
+        btnStartTracking.setOnClickListener(this);
 
         // set up the logo/icon for the app
         ActionBar actionBar = getSupportActionBar();
