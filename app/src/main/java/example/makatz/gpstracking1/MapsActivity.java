@@ -37,6 +37,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private static final String TAG = MapsActivity.class.getSimpleName();
     private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
 
+
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -116,12 +117,32 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-            TrackingData data = new TrackingData(location.getLatitude(), location.getLongitude(), location.getSpeed(), String.valueOf(location.getTime()), ref.getAuth().getProviderData().get("email").toString());
+            String currentAddress = getAddress(location.getLatitude(), location.getLongitude());
+            // data send to OM2M server
+            TrackingData dataToOM2M = new TrackingData(
+                    location.getLatitude(),
+                    location.getLongitude(),
+                    currentAddress,
+                    location.getSpeed(),
+                    String.valueOf(location.getTime()),
+                    ref.getAuth().getProviderData().get("email").toString()
+            );
+
+            // data send to Firebase
+            TrackingData dataToFirebase = new TrackingData(
+                    currentAddress,
+                    location.getSpeed(),
+                    String.valueOf(location.getTime())
+            );
+
+            // move camera to current location
             goToMyLocation(location.getLatitude(), location.getLongitude());
-            sendDataToOM2M(data);
+
+            sendDataToOM2M(dataToOM2M);
+            sendDataToFirebase(dataToFirebase);
 
             // show Toast whenever current address changed
-            String currentAddress = getAddress(location);
+
             if (!oldAddress.equals(currentAddress)) {
                 Log.d(TAG, currentAddress);
                 Toast.makeText(MapsActivity.this, currentAddress, Toast.LENGTH_SHORT).show();
@@ -140,8 +161,16 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ));
     }
 
+    private void sendDataToFirebase(TrackingData data) {
+        String userEmailReformatted = ref.getAuth().getProviderData().get("email").toString().replace('.', '-').replace('@', '-');
+        ref.child(userEmailReformatted).push().setValue(data);
+    }
+
     private void sendDataToOM2M(TrackingData data) {
-        Log.d(TAG, data.toString());
+        // OM2M is a server platform for Internet Of Things
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, data.toString());
+        }
     }
 
     private void changeCamera(CameraUpdate update) {
@@ -161,16 +190,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
-    private String getAddress(Location location) {
+    public String getAddress(double latitude, double longitude) {
         List<Address> addresses = null;
         Geocoder geocoder = new Geocoder(this, Locale.getDefault());
         try {
             // Using getFromLocation() returns an array of Addresses for the area immediately
             // surrounding the given latitude and longitude. The results are a best guess and are
             // not guaranteed to be accurate.
-            addresses = geocoder.getFromLocation(
-                    location.getLatitude(),
-                    location.getLongitude(),
+            addresses = geocoder.getFromLocation(latitude, longitude,
                     // In this sample, we get just a single address.
                     1);
         } catch (IOException ioException) {
