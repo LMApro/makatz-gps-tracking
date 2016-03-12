@@ -196,10 +196,18 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.main_menu_open_map:
                 openMapOnly();
                 break;
+            case R.id.main_menu_change_password:
+                goToChangePassword();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
 
+    }
+
+    private void goToChangePassword() {
+        Intent goToChangePassword = new Intent(MainActivity.this, ChangePasswordActivity.class);
+        startActivity(goToChangePassword);
     }
 
     private void openMapOnly() {

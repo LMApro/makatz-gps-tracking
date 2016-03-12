@@ -34,11 +34,24 @@
     <string name="main_txt_active_user">User: %1$s</string>
     <string name="main_menu_logout">Log out</string>
     <string name="main_menu_open_map">Open Map</string>
+    <string name="main_menu_change_password">Change password</string>
     <string name="main_err_dialog_title">Error!</string>
     <string name="main_err_play_service">Google Play Service is not available!</string>
     <string name="main_btn_toggle_tracking">Start tracking</string>
 
     <!-- Map Activity -->
     <string name="title_activity_maps">Map</string>
+
+    <!-- Change password Activity -->
+    <string name="activity_change_password_title">Change password</string>
+    <string name="change_pw_old_password_hint">Your old password</string>
+    <string name="change_pw_new_password_hint">New password</string>
+    <string name="change_pw_button_label">Change password</string>
+    <string name="change_pw_err_dialog_title">Update Error!</string>
+    <string name="change_pw_status_updating">Updating password &#8230;</string>
+    <string name="change_pw_new_password_retype_hint">Retype new password</string>
+    <string name="change_pw_err_missing_old_password">Please enter your old password!</string>
+    <string name="change_pw_err_missing_new_password">Please enter your new password!</string>
+    <string name="change_pw_err_new_password_mismatch">New passwords not match!</string>
 
 </resources>

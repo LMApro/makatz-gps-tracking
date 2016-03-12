@@ -77,8 +77,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onAuthenticated(AuthData authData) {
                 // Authenticated successfully with payload authData
-                Log.d(TAG, authData.getUid());
-                Log.d(TAG, authData.getToken());
+//                Log.d(TAG, authData.getUid());
+//                Log.d(TAG, authData.getToken());
                 Intent returnToMain = new Intent(LoginActivity.this, MainActivity.class);
                 startActivity(returnToMain);
                 finish();
