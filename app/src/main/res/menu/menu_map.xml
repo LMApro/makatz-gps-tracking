@@ -5,6 +5,5 @@
         android:id="@+id/map_menu_stop_tracking"
         android:title="@string/map_menu_stop_tracking"
         android:orderInCategory="120"
-        android:icon="@mipmap/ic_stop_white"
         app:showAsAction="always" />
 </menu>
