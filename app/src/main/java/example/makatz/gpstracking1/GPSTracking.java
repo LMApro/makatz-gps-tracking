@@ -10,6 +10,7 @@ import com.firebase.client.Firebase;
 public class GPSTracking extends Application {
     public static final String FIREBASE_URL = "https://bk-gpstracking.firebaseio.com";
     public static final String MAP_ONLY = "map_only";
+    public static final String DISTANCE_TRAVELLED = "distance_travelled";
     public static final String TRACKING = "tracking";
 
     @Override

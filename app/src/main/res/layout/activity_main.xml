@@ -29,7 +29,16 @@
         android:textSize="18sp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_marginBottom="69dp" />
+         />
+
+    <TextView
+        android:id="@+id/main_txt_distance_travelled"
+        android:layout_below="@id/main_btn_toggle_tracking"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/btn_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 
 

@@ -27,8 +27,9 @@ public class MainActivity extends AppCompatActivity implements
         View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int REQUEST_DISTANCE_TRAVELLED = 13;
     private static Firebase ref = new Firebase(GPSTracking.FIREBASE_URL);
-    private TextView txtUser;
+    private TextView txtUser, txtDistanceTravelled;
     private Button btnStartTracking;
 
 
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements
     private void setUp() {
         // binding views and set up properties
         txtUser = (TextView) findViewById(R.id.main_txt_active_user);
+        txtDistanceTravelled = (TextView) findViewById(R.id.main_txt_distance_travelled);
         btnStartTracking = (Button) findViewById(R.id.main_btn_toggle_tracking);
         btnStartTracking.setOnClickListener(this);
 
@@ -158,10 +160,22 @@ public class MainActivity extends AppCompatActivity implements
         if (v.getId() == R.id.main_btn_toggle_tracking) {
             if (checkLocationAvailability(this)) {
                 Intent goToMap = new Intent(MainActivity.this, MapsActivity.class);
-                goToMap.putExtra(GPSTracking.TRACKING, true);
-                startActivity(goToMap);
+                startActivityForResult(goToMap, REQUEST_DISTANCE_TRAVELLED);
             } else {
                 showDialogCheckLocation();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_DISTANCE_TRAVELLED) {
+            if (resultCode == RESULT_OK) {
+                if (data != null) {
+                    txtDistanceTravelled.setText(getString(R.string.main_txt_distance_travelled, data.getStringExtra(GPSTracking.DISTANCE_TRAVELLED)));
+                }
+
             }
         }
     }

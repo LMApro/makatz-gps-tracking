@@ -39,9 +39,11 @@
     <string name="main_err_dialog_title">Error!</string>
     <string name="main_err_play_service">Google Play Service is not available!</string>
     <string name="main_btn_toggle_tracking">Start tracking</string>
+    <string name="main_txt_distance_travelled">You\'ve travelled %1$s</string>
 
     <!-- Map Activity -->
     <string name="title_activity_maps">Map</string>
+    <string name="map_menu_stop_tracking">Stop tracking</string>
 
     <!-- Change password Activity -->
     <string name="activity_change_password_title">Change password</string>

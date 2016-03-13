@@ -66,9 +66,6 @@
         <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="example.makatz.gpstracking1.MainActivity" />
         </activity>
     </application>
 

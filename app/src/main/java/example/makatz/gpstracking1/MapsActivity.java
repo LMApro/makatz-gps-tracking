@@ -1,13 +1,18 @@
 package example.makatz.gpstracking1;
 
+import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -27,9 +32,12 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
@@ -102,7 +110,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onConnected(Bundle bundle) {
         mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(2000);
+        mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(17);
         startTrackingLocation();
     }
@@ -113,28 +121,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mGoogleApiClient.connect();
     }
 
-    String oldAddress = "";
-    double oldLatitude = 0.0;
-    double oldLongitude = 0.0;
+    private String oldAddress = "";
+    private double oldLatitude = 0.0;
+    private double oldLongitude = 0.0;
+    private Location oldLocation = null;
+    private float distanceTravelled = 0.0f;
+
     @Override
     public void onLocationChanged(Location location) {
         if (location != null) {
-
             double currentLatitude = location.getLatitude();
             double currentLongitude = location.getLongitude();
             String currentAddress = getAddress(currentLatitude, currentLongitude);
 
-            // SEND DATA WHENEVER COORDINATES CHANGED
-            if ((oldLatitude != currentLatitude || oldLongitude != currentLongitude) && !oldAddress.equals(currentAddress)) {
-                // data send to OM2M server
-                TrackingData dataToOM2M = new TrackingData(
-                        currentLatitude,
-                        currentLongitude,
-                        currentAddress,
-                        location.getSpeed(),
-                        location.getTime(),
-                        ref.getAuth().getProviderData().get("email").toString()
-                );
+            // SEND DATA AND SHOW TOAST WHENEVER CURRENT ADDRESS CHANGED
+            if (!oldAddress.equals(currentAddress)) {
+                Log.d(TAG, currentAddress);
+                Toast.makeText(MapsActivity.this, currentAddress, Toast.LENGTH_SHORT).show();
+                oldAddress = currentAddress;
 
                 // data send to Firebase
                 TrackingData dataToFirebase = new TrackingData(
@@ -143,25 +147,39 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         location.getTime()
                 );
 
-                sendDataToOM2M(dataToOM2M);
                 sendDataToFirebase(dataToFirebase);
+            }
+
+            // MOVE CAMERA AND CALCULATE DISTANCE TRAVELLED WHENEVER COORDINATES CHANGED
+            if ((oldLatitude != currentLatitude || oldLongitude != currentLongitude)) {
+                // calculate distance travelled
+                if (oldLocation != null) {
+                    distanceTravelled += oldLocation.distanceTo(location);
+                }
+                oldLocation = location;
+                Log.d(TAG, String.valueOf(distanceTravelled) + " m");
+
 
                 // move camera to current location
                 goToMyLocation(currentLatitude, currentLongitude, location.getBearing());
-
                 oldLatitude = currentLatitude;
                 oldLongitude = currentLongitude;
-            }
 
-
-            // show Toast whenever current address changed
-            if (!oldAddress.equals(currentAddress)) {
-                Log.d(TAG, currentAddress);
-                Toast.makeText(MapsActivity.this, currentAddress, Toast.LENGTH_SHORT).show();
-                oldAddress = currentAddress;
             }
         }
     }
+
+    private String getDistanceTravelled() {
+        if (this.distanceTravelled < 1000) {
+            return String.valueOf(Math.round(this.distanceTravelled)) + " m";
+        } else {
+            DecimalFormat formatter = new DecimalFormat("#.##");
+            formatter.setRoundingMode(RoundingMode.CEILING);
+            return formatter.format(this.distanceTravelled / 1000) + " km";
+        }
+
+    }
+
 
     private void goToMyLocation(double latitude, double longitude, float bearing) {
         changeCamera(CameraUpdateFactory.newCameraPosition(
@@ -178,12 +196,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         ref.child(userEmailReformatted).push().setValue(data);
     }
 
-    private void sendDataToOM2M(TrackingData data) {
-        // OM2M is a server platform for Internet Of Things
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, data.toString());
-        }
-    }
 
     private void changeCamera(CameraUpdate update) {
         mMap.moveCamera(update);
@@ -233,6 +245,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             return TextUtils.join(", ", addressFragments);
         }
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_map, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.map_menu_stop_tracking:
+                returnToMain();
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    private void returnToMain() {
+        Intent returnToMain = getIntent();
+        returnToMain.putExtra(GPSTracking.DISTANCE_TRAVELLED, getDistanceTravelled());
+        setResult(RESULT_OK, returnToMain);
+        finish();
     }
 }
 
