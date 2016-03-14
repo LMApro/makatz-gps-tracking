@@ -75,6 +75,9 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onStart() {
         super.onStart();
+        // init OM2M
+        OM2MConnector connector = new OM2MConnector(this, "10.0.3.2", 8090, "nscl", "GPS_TRACKING");
+        connector.init();
         if (!checkLocationAvailability(this)) {
             showDialogCheckLocation();
         }
@@ -156,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.main_btn_toggle_tracking) {
+
             if (checkLocationAvailability(this)) {
                 Intent goToMap = new Intent(MainActivity.this, MapsActivity.class);
                 goToMap.putExtra(GPSTracking.TRACKING, true);

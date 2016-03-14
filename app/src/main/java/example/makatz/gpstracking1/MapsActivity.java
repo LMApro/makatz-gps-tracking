@@ -25,6 +25,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
+import com.loopj.android.http.AsyncHttpClient;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,6 +41,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
+
+    private static AsyncHttpClient client = new AsyncHttpClient();
 
 
     @Override
@@ -163,6 +166,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private void sendDataToOM2M(TrackingData data) {
         Log.d(TAG, data.toString());
+
+
     }
 
     private void changeCamera(CameraUpdate update) {
