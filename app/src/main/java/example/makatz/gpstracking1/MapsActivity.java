@@ -165,9 +165,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
     private void sendDataToOM2M(TrackingData data) {
-        Log.d(TAG, data.toString());
+        if (BuildConfig.DEBUG) {
+            Log.d(TAG, data.toString());
+        }
 
-
+        OM2MConnector connector = new OM2MConnector(this, "10.0.3.2", 8090, "nscl", "GPS_TRACKING");
+        connector.createDataInstance(data);
     }
 
     private void changeCamera(CameraUpdate update) {

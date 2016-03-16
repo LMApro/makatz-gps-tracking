@@ -16,10 +16,11 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class OM2MConnector {
     public static final int APPLICATION = 1;
     public static final int CONTAINER = 2;
-    public static final int CONTENT_INSTANCE = 3;
+    public static final int DATA_CONTENT_INSTANCE = 3;
+    public static final int DESCRIPTOR_CONTENT_INSTANCE = 4;
+    public static final int METHOD_GET = 100;
+    public static final int METHOD_POST = 200;
 
-    public static final String DESCRIPTOR_CONTAINER = "DESCRIPTOR";
-    public static final String DATA_CONTAINER = "DATA";
 
     private String host;
     private int port;
@@ -41,27 +42,46 @@ public class OM2MConnector {
     public void init() {
         client.setBasicAuth("admin", "admin");
         createApp();
-        createContainer(DESCRIPTOR_CONTAINER);
-        createContainer(DATA_CONTAINER);
     }
 
-    public void setBasicAuth(String username, String password) {
-        client.setBasicAuth(username, password);
-    }
 
     public void createApp() {
         // Send POST request to this URL:
         // http://<host>:<port>/om2m/<sclID>/applications
 
-        String reqBody = "<om2m:application xmlns:om2m='http://uri.etsi.org/m2m' appId='" + appName + "' >" +
-            "<om2m:searchStrings>" +
-                "<om2m:searchString>Type/android</om2m:searchString>" +
-                "<om2m:searchString>Category/gps</om2m:searchString>" +
-                "<om2m:searchString>Location/anywhere</om2m:searchString>" +
-            "</om2m:searchStrings>" +
-        "</om2m:application>";
+        makeGETRequest(makeURL(METHOD_GET, APPLICATION), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.d("GET: app", "success");
+            }
 
-        makePOSTRequest(makeURL(APPLICATION), reqBody);
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String reqBody = "<om2m:application xmlns:om2m='http://uri.etsi.org/m2m' appId='" + appName + "' >" +
+                        "<om2m:searchStrings>" +
+                        "<om2m:searchString>Type/android</om2m:searchString>" +
+                        "<om2m:searchString>Category/gps</om2m:searchString>" +
+                        "<om2m:searchString>Location/anywhere</om2m:searchString>" +
+                        "</om2m:searchStrings>" +
+                        "</om2m:application>";
+
+                makePOSTRequest(makeURL(METHOD_POST, APPLICATION), reqBody, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        Log.d("POST: app", "success");
+                        createDescriptorContainer();
+                        createDataContainer();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Log.d("POST: app", "fail");
+                    }
+                });
+            }
+        });
+
+
     }
 
 
@@ -72,33 +92,128 @@ public class OM2MConnector {
 //        return "Basic " + Base64.encodeToString(authBytes, Base64.DEFAULT);
 //    }
 
-    public void createContainer(String type) {
+    public void createDescriptorContainer() {
         // Send POST request to this URL:
         // http://<host>:<port>/om2m/<sclID>/applications/<appName>/containers
         // with body of the following content:
         // <om2m:container xmlns:om2m='http://uri.etsi.org/m2m' om2m:id='DATA'></om2m:container>
-        type = type.toUpperCase();
-        String reqBody = "<om2m:container xmlns:om2m='http://uri.etsi.org/m2m' om2m:id='" + type + "'></om2m:container>";
-        makePOSTRequest(makeURL(CONTAINER), reqBody);
+
+        makeGETRequest(makeURL(METHOD_GET, DESCRIPTOR_CONTENT_INSTANCE), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.d("GET: ", "description container success");
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String reqBody = "<om2m:container xmlns:om2m='http://uri.etsi.org/m2m' om2m:id='DESCRIPTOR'></om2m:container>";
+                makePOSTRequest(makeURL(METHOD_POST, CONTAINER), reqBody, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        Log.d("POST: ", "description container success");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Log.d("POST: ", "description container fail");
+                    }
+                });
+            }
+        });
     }
 
-    public void createInstance(String type) {
-        type = type.toUpperCase();
+    public void createDataContainer() {
+        makeGETRequest(makeURL(METHOD_GET, DATA_CONTENT_INSTANCE), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.d("GET: data container", "success " + String.valueOf(statusCode));
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                String reqBody = "<om2m:container xmlns:om2m='http://uri.etsi.org/m2m' om2m:id='DATA'></om2m:container>";
+                makePOSTRequest(makeURL(METHOD_POST, CONTAINER), reqBody, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        Log.d("POST: data container", "success");
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Log.d("POST: data container", "fail");
+                    }
+                });
+            }
+        });
+    }
+
+    public void createDataInstance(TrackingData data) {
+        String reqBody = "<obj>" +
+                "<str name='appId' val='" + this.appName + "'/>" +
+                "<str name='category' val='gps'/>" +
+                "<str name='userEmail' val='" + data.getUserEmail() + "'/>" +
+                "<str name='timestamp' val='" + data.getTimestamp() + "'/>" +
+                "<str name='address' val='" + data.getAddress() + "'/>" +
+                "<str name='latitude' val='" + data.getLatitude() + "'/>" +
+                "<str name='longitude' val='" + data.getLongitude() + "'/>" +
+                "<str name='velocity' val='" + data.getSpeed() + "'/>" +
+            "</obj>";
+
+        AsyncHttpResponseHandler handler = new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+            }
+        };
+
+        makePOSTRequest(makeURL(METHOD_POST, DATA_CONTENT_INSTANCE), reqBody, handler);
 
     }
 
-    private String makeURL(int type) {
-        if (type == CONTAINER) {
-            return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications/" + this.appName + "/containers";
-        } else if (type == APPLICATION) {
-            return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications";
+    private String makeURL(int method, int type) {
+        String defaultURL = "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID;
+        if (method == METHOD_GET) {
+            if (type == APPLICATION) {
+                return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications/" + this.appName;
+            } else if (type == DESCRIPTOR_CONTENT_INSTANCE) {
+                return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications" + this.appName + "/containers/DESCRIPTOR";
+            } else if (type == DATA_CONTENT_INSTANCE) {
+                return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications/" + this.appName + "/containers/DATA";
+            } else {
+                return defaultURL;
+            }
+
+        } else if (method == METHOD_POST)  {
+
+            if (type == CONTAINER) {
+                return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications/" + this.appName + "/containers";
+            } else if (type == APPLICATION) {
+                return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications";
+            } else if (type == DATA_CONTENT_INSTANCE) {
+                return "http://" + this.host + ":" + String.valueOf(this.port) + "/om2m/" + this.sclID + "/applications/" + this.appName + "/containers/DATA/contentInstances";
+            } else {
+                return defaultURL;
+            }
+
         } else {
-            return "";
+            return defaultURL;
         }
 
     }
 
-    public void makePOSTRequest(String url, String reqBody) {
+    public boolean isConnected() {
+        // make GET request to <host>:<port>
+//        if statusCode == 200 => connected!!
+//        makeGETRequest(makeURL(METHOD_GET, 0), new);
+        return true;
+    }
+
+    public void makePOSTRequest(String url, String reqBody, AsyncHttpResponseHandler handler) {
         HttpEntity entity;
 
         try {
@@ -112,17 +227,11 @@ public class OM2MConnector {
         }
 
         String contentType = "string/xml;UTF-8";
-        client.post(context, url, entity, contentType, new AsyncHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                Log.d("HTTP", "onSuccess: " + responseBody.toString());
-            }
+        client.post(context, url, entity, contentType, handler);
+    }
 
-            @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Log.d("HTTP", "onFailure: " + responseBody.toString());
-            }
-        });
+    public void makeGETRequest(String url, AsyncHttpResponseHandler handler) {
+        client.get(context, url, handler);
     }
 
 }

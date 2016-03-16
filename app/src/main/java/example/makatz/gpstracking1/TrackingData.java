@@ -31,7 +31,7 @@ public class TrackingData {
     }
 
     public static String formatTime(long timestamp) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.getDefault());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss", Locale.US);
         return formatter.format(timestamp);
     }
 
@@ -47,6 +47,17 @@ public class TrackingData {
         return timestamp;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
 
     @Override
     public String toString() {
