@@ -9,8 +9,8 @@ import com.firebase.client.Firebase;
  */
 public class GPSTracking extends Application {
     public static final String FIREBASE_URL = "https://bk-gpstracking.firebaseio.com";
-    public static final String MAP_ONLY = "map_only";
     public static final String TRACKING = "tracking";
+
 
     @Override
     public void onCreate() {
@@ -18,9 +18,5 @@ public class GPSTracking extends Application {
         Firebase.setAndroidContext(this);
 
     }
-
-
-
-
 
 }

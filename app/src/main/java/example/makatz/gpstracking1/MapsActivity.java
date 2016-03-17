@@ -42,7 +42,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
 
-    private static AsyncHttpClient client = new AsyncHttpClient();
+//    private String sclHost;
+//    private int sclPort;
+//    private String sclId;
+//    private String sclAppName;
+
+
 
 
     @Override
@@ -58,8 +63,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void setUp() {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            boolean isTrackingLocation = extras.getBoolean(GPSTracking.TRACKING); //true
-            boolean isMapOnly = extras.getBoolean(GPSTracking.MAP_ONLY);
+//            sclHost = extras.getString(GPSTracking.SCL_HOST);
+//            sclPort = extras.getInt(GPSTracking.SCL_PORT);
+//            sclId = extras.getString(GPSTracking.SCL_ID);
+//            sclAppName = extras.getString(GPSTracking.APP_NAME);
         }
 
     }
@@ -169,8 +176,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Log.d(TAG, data.toString());
         }
 
-        OM2MConnector connector = new OM2MConnector(this, "10.0.3.2", 8090, "nscl", "GPS_TRACKING");
-        connector.createDataInstance(data);
+//        OM2MConnector connector = new OM2MConnector(this,
+//                getResources().getString(R.string.scl_host),
+//                Integer.parseInt(getResources().getString(R.string.scl_port)),
+//                getResources().getString(R.string.scl_id),
+//                getResources().getString(R.string.scl_app_name));
+
+        MainActivity.connector.createDataInstance(data);
     }
 
     private void changeCamera(CameraUpdate update) {

@@ -31,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements
     private TextView txtUser;
     private Button btnStartTracking;
 
+    public static OM2MConnector connector;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +78,12 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStart() {
         super.onStart();
         // init OM2M
-        OM2MConnector connector = new OM2MConnector(this, "10.0.3.2", 8090, "nscl", "GPS_TRACKING");
+        connector = new OM2MConnector(this,
+                getResources().getString(R.string.scl_host),
+                Integer.parseInt(getResources().getString(R.string.scl_port)),
+                getResources().getString(R.string.scl_id),
+                getResources().getString(R.string.scl_app_name)
+        );
         connector.init();
         if (!checkLocationAvailability(this)) {
             showDialogCheckLocation();
@@ -123,7 +130,6 @@ public class MainActivity extends AppCompatActivity implements
     protected void onStop() {
         super.onStop();
     }
-
 
     public boolean checkPlayServicesAvailability(Context context) {
         int resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context);
@@ -189,9 +195,6 @@ public class MainActivity extends AppCompatActivity implements
             case R.id.main_menu_logout:
                 ref.unauth();
                 break;
-            case R.id.main_menu_open_map:
-                openMapOnly();
-                break;
             case R.id.main_menu_change_password:
                 goToChangePassword();
                 break;
@@ -206,10 +209,5 @@ public class MainActivity extends AppCompatActivity implements
         startActivity(goToChangePassword);
     }
 
-    private void openMapOnly() {
-        Intent openMapOnly = new Intent(MainActivity.this, MapsActivity.class);
-        openMapOnly.putExtra(GPSTracking.MAP_ONLY, true);
-        startActivity(openMapOnly);
-    }
 
 }

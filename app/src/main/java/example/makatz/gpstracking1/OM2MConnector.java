@@ -206,12 +206,6 @@ public class OM2MConnector {
 
     }
 
-    public boolean isConnected() {
-        // make GET request to <host>:<port>
-//        if statusCode == 200 => connected!!
-//        makeGETRequest(makeURL(METHOD_GET, 0), new);
-        return true;
-    }
 
     public void makePOSTRequest(String url, String reqBody, AsyncHttpResponseHandler handler) {
         HttpEntity entity;
@@ -221,12 +215,14 @@ public class OM2MConnector {
         } catch (IllegalArgumentException e) {
             Log.d("HTTP", "StringEntity: IllegalArgumentException");
             return;
-        } catch (UnsupportedEncodingException e) {
+        }
+        catch (UnsupportedEncodingException e) {
             Log.d("HTTP", "StringEntity: UnsupportedEncodingException");
             return;
         }
 
         String contentType = "string/xml;UTF-8";
+
         client.post(context, url, entity, contentType, handler);
     }
 
