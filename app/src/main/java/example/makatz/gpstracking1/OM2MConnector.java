@@ -148,14 +148,15 @@ public class OM2MConnector {
     }
 
     public void createDataInstance(TrackingData data) {
-        String reqBody = "<obj>" +
+        String reqBody = "<?xml version='1.0' encoding='UTF-8' standalone='yes'?>" +
+                "<obj>" +
                 "<str name='appId' val='" + this.appName + "'/>" +
                 "<str name='category' val='gps'/>" +
                 "<str name='userEmail' val='" + data.getUserEmail() + "'/>" +
                 "<str name='timestamp' val='" + data.getTimestamp() + "'/>" +
                 "<str name='address' val='" + data.getAddress() + "'/>" +
-                "<str name='latitude' val='" + data.getLatitude() + "'/>" +
-                "<str name='longitude' val='" + data.getLongitude() + "'/>" +
+//                "<str name='latitude' val='" + data.getLatitude() + "'/>" +
+//                "<str name='longitude' val='" + data.getLongitude() + "'/>" +
                 "<str name='velocity' val='" + data.getSpeed() + "'/>" +
             "</obj>";
 
@@ -170,6 +171,7 @@ public class OM2MConnector {
 
             }
         };
+        handler.setCharset("UTF-8");
 
         makePOSTRequest(makeURL(METHOD_POST, DATA_CONTENT_INSTANCE), reqBody, handler);
 
@@ -221,7 +223,7 @@ public class OM2MConnector {
             return;
         }
 
-        String contentType = "string/xml;UTF-8";
+        String contentType = "text/xml";
 
         client.post(context, url, entity, contentType, handler);
     }

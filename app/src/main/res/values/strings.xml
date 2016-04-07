@@ -8,8 +8,8 @@
     <string name="quit_app">Exit</string>
 
     <!-- SCL config -->
-    <string name="scl_host">10.0.3.2</string>
-    <string name="scl_port">8090</string>
+    <string name="scl_host">anhtranhai.ddns.net</string>
+    <string name="scl_port">8080</string>
     <string name="scl_id">nscl</string>
     <string name="scl_app_name">GPS_TRACKING</string>
 
